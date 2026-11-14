@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tools-select | 互動工具選擇與視覺化知識圖鑑</title>
+  <meta name="description" content="互動式工具選擇與日常學習中心：首發收錄 15 種常用數據圖表可調式互動實驗室、用途、常見場景與避坑指南。" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <!-- 頂部全域導覽列 (支援多工具切換與隨手學習) -->
+  <header class="top-navbar">
+    <div class="navbar-inner">
+      <div class="brand" data-nav-view="hub-directory" title="前往多工具選擇大廳">
+        <div class="brand-logo">TS</div>
+        <div class="brand-text">
+          <h1>Tools-select 工具與知識圖鑑</h1>
+          <span>Interactive Tool Selector &amp; Learning Hub</span>
+        </div>
+      </div>
+
+      <nav class="nav-actions">
+        <button class="nav-pill active" data-nav-view="chart-workbench">
+          📊 15種常用圖表互動工作台
+        </button>
+        <button class="nav-pill" data-nav-view="chart-overview">
+          🗂️ 15張圖表總覽牆
+        </button>
+        <button class="nav-pill" id="btn-random" title="隨機抽一張圖表來微學習">
+          🎲 隨機抽卡學習
+        </button>
+        <button class="nav-pill" data-nav-view="hub-directory">
+          🧭 全部工具大廳 (擴充架構)
+        </button>
+        <button class="nav-pill" id="btn-theme">
+          ☀️ 切換淺色
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- 頂部橫幅與關鍵統計 -->
+    <section class="hub-banner">
+      <div class="hub-banner-info">
+        <h2>選對工具，一眼看懂數據背後的真相</h2>
+        <p>
+          這裡是你的個人化<strong>工具選擇器與隨手學習基地</strong>。不僅能根據當下任務快速挑選合適的圖表或工具，沒事時也能點擊「隨機抽卡學習」並拉動右側滑桿，親手體驗參數變化對視覺判讀的影響。
+        </p>
+      </div>
+      <div class="hub-stats">
+        <div class="stat-chip">
+          <strong>15</strong>
+          <span>可調式常用圖表</span>
+        </div>
+        <div class="stat-chip">
+          <strong>5 大類</strong>
+          <span>分析決策情境</span>
+        </div>
+        <div class="stat-chip">
+          <strong id="stat-fav-count">0</strong>
+          <span>已收藏常用圖表</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 決策精靈與搜尋篩選區 (共用) -->
+    <section id="shared-filter-section">
+      <div class="wizard-panel">
+        <div class="wizard-header">
+          <h3>🧭 圖表決策精靈：你現在想用數據回答什麼問題？</h3>
+          <span style="font-size:0.8rem;color:var(--text-secondary);">點選下方目標立即篩選最適合的圖表</span>
+        </div>
+        <div class="goal-buttons" id="goal-buttons"></div>
+      </div>
+
+      <div class="filter-bar">
+        <div class="search-input-wrap">
+          <span class="search-icon">🔍</span>
+          <input
+            type="text"
+            id="search-input"
+            class="search-input"
+            placeholder="搜尋圖表名稱（如：長條圖、盒鬚圖、桑基圖、Waterfall）或應用場景（如：財報、電商、留存率）..."
+          />
+        </div>
+      </div>
+    </section>
+
+    <!-- 視圖 1：15種常用圖表互動工作台 (Master-Detail) -->
+    <section id="view-workbench" class="workspace-layout">
+      <!-- 左側 15 種圖表清單 -->
+      <aside class="chart-nav-list" id="chart-nav-list"></aside>
+
+      <!-- 右側主舞台：可調式圖表 + 參數控制 + 用途/場景/注意事項 -->
+      <article class="chart-stage-card">
+        <div class="stage-header">
+          <div class="stage-title-group">
+            <h2 id="stage-title"></h2>
+            <p id="stage-summary"></p>
+          </div>
+          <div class="stage-actions">
+            <button class="btn-icon" id="btn-prev-chart" title="上一張圖表">◀ 上一張</button>
+            <button class="btn-icon" id="btn-next-chart" title="下一張圖表">下一張 ▶</button>
+            <button class="btn-icon" id="btn-bookmark">☆ 加入收藏</button>
+          </div>
+        </div>
+
+        <!-- 互動畫布與即時控制器 -->
+        <div class="interactive-playground">
+          <div class="canvas-wrapper">
+            <div class="svg-mount" id="svg-mount"></div>
+            <div class="canvas-caption">
+              <span>💡 提示：將滑鼠移至圖表元素上可檢視詳細數值 Tooltip</span>
+              <span>即時 SVG 向量渲染引擎</span>
+            </div>
+          </div>
+
+          <div class="controls-box">
+            <h4>
+              <span>🎛️ 互動參數調整實驗室</span>
+              <button class="btn-icon" id="btn-reset-params" style="padding:0.2rem 0.55rem;font-size:0.74rem;">重置參數</button>
+            </h4>
+            <div id="controls-list" style="display:flex;flex-direction:column;gap:0.9rem;"></div>
+          </div>
+        </div>
+
+        <!-- 核心知識三欄：用途、常見場景、注意事項 -->
+        <div class="knowledge-grid">
+          <div class="info-panel purpose">
+            <h3>🎯 核心用途 (What &amp; Why)</h3>
+            <ul id="list-purpose"></ul>
+          </div>
+          <div class="info-panel scenarios">
+            <h3>💼 常見實務場景 (When to Use)</h3>
+            <ul id="list-scenarios"></ul>
+          </div>
+          <div class="info-panel caveats">
+            <h3>⚠️ 注意事項與避坑指南 (Caveats)</h3>
+            <ul id="list-caveats"></ul>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- 視圖 2：15張圖表總覽卡片牆 -->
+    <section id="view-overview" class="hidden">
+      <div class="overview-grid" id="overview-grid"></div>
+    </section>
+
+    <!-- 視圖 3：多工具擴充大廳 (Tools Hub Directory) -->
+    <section id="view-hub" class="hidden">
+      <div class="wizard-panel">
+        <div class="wizard-header">
+          <h3>🧩 模組化工具大廳 (Multi-Tool Registry Architecture)</h3>
+          <span style="font-size:0.82rem;color:var(--text-secondary);">未來新增工具僅需在 <code>js/registry.js</code> 註冊即可自動掛載</span>
+        </div>
+        <p style="font-size:0.9rem;color:var(--text-secondary);margin-bottom:0.5rem;">
+          本網站採用可擴充的模組化註冊中心設計，旨在收集各類「決策選擇器」與「互動視覺化學習工具」。點選已啟用的工具卡片即可進入使用：
+        </p>
+        <div class="tool-directory-grid" id="tool-directory-grid"></div>
+      </div>
+    </section>
+  </main>
+
+  <div id="chart-tooltip" class="chart-tooltip"></div>
+
+  <script src="js/registry.js"></script>
+  <script src="data/charts-data.js"></script>
+  <script src="js/chart-renderer.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
