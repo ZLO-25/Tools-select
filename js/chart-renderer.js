@@ -877,6 +877,176 @@
     return svg + '</svg>';
   }
 
+  // 16. River Chart (Band Channel & Streamgraph)
+  function renderRiver(p) {
+    const w = 680, h = 340, padL = 55, padR = 30, padT = 32, padB = 45;
+    const plotW = w - padL - padR, plotH = h - padT - padB;
+    const months = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
+    const bwMul = Number(p.bandWidth) / 100;
+    const xAt = (i) => padL + (i / (months.length - 1)) * plotW;
+
+    let svg = createSVG(w, h);
+
+    if (p.riverMode === 'channel') {
+      // Mode A: Confidence / Historical Range Channel River Chart
+      const meanVals = [48, 52, 56, 61, 58, 64, 69, 72, 68, 74, 78, 82];
+      const halfBand = [12, 14, 15, 13, 16, 18, 15, 14, 17, 15, 16, 14].map(v => v * bwMul);
+      const actualVals = [46, 55, 62, 59, 52, 68, 86, 75, 64, 79, 83, 88];
+      const toY = (v) => padT + plotH - (Math.max(5, Math.min(115, v)) / 120) * plotH;
+
+      for (let i = 0; i <= 4; i++) {
+        const v = i * 30;
+        const y = toY(v);
+        svg += `<line x1="${padL}" y1="${y}" x2="${w - padR}" y2="${y}" stroke="currentColor" stroke-opacity="0.12" stroke-dasharray="4 4"/>`;
+        svg += `<text x="${padL - 8}" y="${y + 4}" text-anchor="end" fill="currentColor" opacity="0.65" font-size="11">${v}</text>`;
+      }
+
+      // Outer 2x band & Inner 1x band
+      const upper2 = meanVals.map((m, i) => `${xAt(i)},${toY(m + halfBand[i] * 1.45)}`).join(' L ');
+      const lower2 = [...meanVals].reverse().map((m, idx) => {
+        const i = meanVals.length - 1 - idx;
+        return `${xAt(i)},${toY(m - halfBand[i] * 1.45)}`;
+      }).join(' L ');
+      svg += `<path d="M ${upper2} L ${lower2} Z" fill="#38bdf8" fill-opacity="0.16"/>`;
+
+      const upper1 = meanVals.map((m, i) => `${xAt(i)},${toY(m + halfBand[i])}`).join(' L ');
+      const lower1 = [...meanVals].reverse().map((m, idx) => {
+        const i = meanVals.length - 1 - idx;
+        return `${xAt(i)},${toY(m - halfBand[i])}`;
+      }).join(' L ');
+      svg += `<path d="M ${upper1} L ${lower1} Z" fill="#38bdf8" fill-opacity="0.34" stroke="#38bdf8" stroke-opacity="0.45" stroke-width="1.5"/>`;
+
+      // Mean line
+      const meanLine = meanVals.map((m, i) => `${i === 0 ? 'M' : 'L'}${xAt(i)},${toY(m)}`).join(' ');
+      svg += `<path d="${meanLine}" fill="none" stroke="#e2e8f0" stroke-width="2" stroke-dasharray="5 4"/>`;
+
+      // Actual trajectory
+      if (p.showActualLine) {
+        const actLine = actualVals.map((a, i) => `${i === 0 ? 'M' : 'L'}${xAt(i)},${toY(a)}`).join(' ');
+        svg += `<path d="${actLine}" fill="none" stroke="#fbbf24" stroke-width="3"/>`;
+        actualVals.forEach((a, i) => {
+          const isOut = a > meanVals[i] + halfBand[i] || a < meanVals[i] - halfBand[i];
+          svg += `<circle cx="${xAt(i)}" cy="${toY(a)}" r="${isOut ? 6 : 4.5}" fill="${isOut ? '#fb7185' : '#fbbf24'}" stroke="#0b0f19" stroke-width="1.5" data-tip="${months[i]} 實際值:${a} (河道中心:${meanVals[i]} ±${Math.round(halfBand[i])}) ${isOut ? '⚠️ 突破常態河道!' : ''}"/>`;
+        });
+      }
+
+      months.forEach((m, i) => {
+        svg += `<text x="${xAt(i)}" y="${padT + plotH + 22}" text-anchor="middle" fill="currentColor" opacity="0.8" font-size="11">${m}</text>`;
+      });
+      svg += `<text x="${padL + 8}" y="${padT - 8}" fill="#38bdf8" font-size="11.5">🌊 淺藍帶 = 歷史常態河道區間 (±1σ / ±2σ)　|　虛線 = 五年均值　|　<tspan fill="#fbbf24" font-weight="700">黃線 = 當期實際值 (紅點為破岸異常)</tspan></text>`;
+    } else {
+      // Mode B: ThemeRiver / Streamgraph (Centered organic streams)
+      const cats = [
+        { name: 'AI 雲端服務', color: '#38bdf8', vals: [18, 22, 28, 34, 40, 46, 52, 56, 60, 64, 68, 72] },
+        { name: '行動端應用', color: '#818cf8', vals: [30, 32, 29, 31, 35, 38, 36, 34, 37, 39, 36, 35] },
+        { name: '傳統桌機軟體', color: '#34d399', vals: [42, 38, 35, 30, 26, 24, 20, 18, 16, 15, 14, 12] }
+      ];
+      const cy = padT + plotH / 2;
+      const scale = 1.15 * bwMul;
+
+      const totals = months.map((_, i) => cats.reduce((s, c) => s + c.vals[i], 0));
+      let runningOffset = months.map((_, i) => -totals[i] / 2);
+
+      cats.forEach((c) => {
+        const yBotArr = runningOffset.map(v => cy + v * scale);
+        const yTopArr = runningOffset.map((v, i) => cy + (v + c.vals[i]) * scale);
+        const topPts = yTopArr.map((y, i) => `${xAt(i)},${y.toFixed(1)}`).join(' L ');
+        const botPts = [...yBotArr].reverse().map((y, idx) => {
+          const i = months.length - 1 - idx;
+          return `${xAt(i)},${y.toFixed(1)}`;
+        }).join(' L ');
+        svg += `<path d="M ${topPts} L ${botPts} Z" fill="${c.color}" fill-opacity="0.82" stroke="#0b0f19" stroke-width="1.5" data-tip="主題河流：${c.name}"/>`;
+        runningOffset = runningOffset.map((v, i) => v + c.vals[i]);
+      });
+
+      months.forEach((m, i) => {
+        svg += `<text x="${xAt(i)}" y="${padT + plotH + 22}" text-anchor="middle" fill="currentColor" opacity="0.8" font-size="11">${m}</text>`;
+      });
+
+      cats.forEach((c, idx) => {
+        svg += `<rect x="${padL + idx * 140}" y="8" width="12" height="12" rx="3" fill="${c.color}"/>`;
+        svg += `<text x="${padL + idx * 140 + 18}" y="18" fill="currentColor" font-size="11.5">${c.name}</text>`;
+      });
+    }
+
+    return svg + '</svg>';
+  }
+
+  // 17. Gantt Chart
+  function renderGantt(p) {
+    const w = 680, h = 340, padL = 135, padR = 30, padT = 38, padB = 38;
+    const plotW = w - padL - padR, plotH = h - padT - padB;
+    const totalWeeks = 12;
+    const delay = Number(p.delayDays);
+    const todayW = Number(p.todayWeek);
+
+    const tasks = [
+      { id: 1, name: '1. 需求規格訪談', start: 0, dur: 2, prog: 100, crit: true, dep: null },
+      { id: 2, name: '2. UI/UX 原型設計', start: 2, dur: 2, prog: 100, crit: false, dep: 1 },
+      { id: 3, name: '3. 核心架構與 API', start: 2, dur: 3 + delay, prog: 70, crit: true, dep: 1 },
+      { id: 4, name: '4. 前端互動介面開發', start: 4, dur: 3, prog: 50, crit: false, dep: 2 },
+      { id: 5, name: '5. 系統整合與壓測', start: 5 + delay, dur: 2, prog: 20, crit: true, dep: 3 },
+      { id: 6, name: '6. 正式上線里程碑 ★', start: 7 + delay, dur: 1, prog: 0, crit: true, dep: 5, milestone: true }
+    ];
+
+    let svg = createSVG(w, h);
+    const xAt = (wk) => padL + (wk / totalWeeks) * plotW;
+    const rowH = plotH / tasks.length;
+
+    // Week grid columns
+    for (let wk = 0; wk <= totalWeeks; wk++) {
+      const x = xAt(wk);
+      svg += `<line x1="${x}" y1="${padT - 8}" x2="${x}" y2="${padT + plotH}" stroke="currentColor" stroke-opacity="0.12" stroke-dasharray="3 3"/>`;
+      if (wk < totalWeeks) {
+        svg += `<text x="${x + (plotW / totalWeeks) / 2}" y="${padT - 12}" text-anchor="middle" fill="currentColor" opacity="0.75" font-size="11">W${wk + 1}</text>`;
+      }
+    }
+
+    // Task bars
+    tasks.forEach((t, i) => {
+      const y = padT + i * rowH;
+      const barY = y + (rowH - 22) / 2;
+      const x1 = xAt(t.start);
+      const bw = Math.max(14, (t.dur / totalWeeks) * plotW);
+      const isCrit = p.showCritical && t.crit;
+      const baseColor = isCrit ? '#fb7185' : '#38bdf8';
+
+      svg += `<text x="${padL - 10}" y="${y + rowH / 2 + 4}" text-anchor="end" fill="currentColor" font-size="12" font-weight="${isCrit ? '700' : '500'}">${t.name}</text>`;
+
+      // Background planned bar
+      svg += `<rect x="${x1}" y="${barY}" width="${bw}" height="22" rx="6" fill="${baseColor}" fill-opacity="0.28" stroke="${baseColor}" stroke-width="1.8" data-tip="${t.name} | 排程: W${t.start + 1}~W${t.start + t.dur} | 完成度: ${t.prog}% ${isCrit ? '(🔥要徑任務)' : ''}"/>`;
+
+      // Progress fill
+      if (t.prog > 0) {
+        const pw = (t.prog / 100) * bw;
+        svg += `<rect x="${x1}" y="${barY}" width="${pw}" height="22" rx="6" fill="${baseColor}" fill-opacity="0.88"/>`;
+      }
+
+      svg += `<text x="${x1 + bw + 6}" y="${barY + 15}" fill="currentColor" font-size="11" opacity="0.85">${t.prog}%</text>`;
+
+      // Dependency connector
+      if (p.showDeps && t.dep) {
+        const prevIdx = tasks.findIndex(x => x.id === t.dep);
+        if (prevIdx >= 0) {
+          const prev = tasks[prevIdx];
+          const px2 = xAt(prev.start + prev.dur);
+          const py = padT + prevIdx * rowH + rowH / 2;
+          const cy = y + rowH / 2;
+          svg += `<path d="M ${px2} ${py} L ${px2 + 8} ${py} L ${px2 + 8} ${cy} L ${x1 - 3} ${cy}" fill="none" stroke="#fbbf24" stroke-width="1.6" stroke-dasharray="3 2"/>`;
+          svg += `<polygon points="${x1},${cy} ${x1 - 5},${cy - 3.5} ${x1 - 5},${cy + 3.5}" fill="#fbbf24"/>`;
+        }
+      }
+    });
+
+    // Today vertical line
+    const tx = xAt(todayW);
+    svg += `<line x1="${tx}" y1="${padT - 10}" x2="${tx}" y2="${padT + plotH + 6}" stroke="#34d399" stroke-width="2.5"/>`;
+    svg += `<rect x="${tx - 34}" y="${padT + plotH + 4}" width="68" height="18" rx="4" fill="#34d399"/>`;
+    svg += `<text x="${tx}" y="${padT + plotH + 16}" text-anchor="middle" fill="#0b0f19" font-size="10.5" font-weight="800">今日 W${todayW}</text>`;
+
+    return svg + '</svg>';
+  }
+
   const RENDERERS = {
     bar: renderBar,
     line: renderLine,
@@ -892,7 +1062,9 @@
     funnel: renderFunnel,
     waterfall: renderWaterfall,
     sankey: renderSankey,
-    bullet: renderBullet
+    bullet: renderBullet,
+    river: renderRiver,
+    gantt: renderGantt
   };
 
   window.renderChartSVG = function (chartId, params) {

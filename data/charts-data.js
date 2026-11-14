@@ -3,9 +3,9 @@
  * 包含：分類、決策標籤、互動控制項定義、核心用途、常見場景、設計注意事項
  */
 window.CHART_GOALS = [
-  { id: 'all', label: '🌟 全部圖表 (15)', desc: '瀏覽所有15種經典數據圖表' },
+  { id: 'all', label: '🌟 全部圖表 (17)', desc: '瀏覽所有17種經典數據與專案圖表' },
   { id: 'compare', label: '📏 比較數值高低', desc: '比較不同項目、群組或多維度能力表現' },
-  { id: 'trend', label: '📈 觀察時間趨勢與增減', desc: '追蹤隨時間變化的走勢、累積量或結構增減' },
+  { id: 'trend', label: '📈 觀察時間趨勢與時程', desc: '追蹤隨時間變化的走勢、河道區間、專案排程或累積增減' },
   { id: 'part', label: '🥧 剖析佔比與階層結構', desc: '呈現各部分佔整體的比例、多層結構或轉化流失' },
   { id: 'dist', label: '🔔 檢視統計分佈與離群值', desc: '看數據集中趨勢、偏態、雙峰或極端異常值' },
   { id: 'corr', label: '🔗 探索關聯、矩陣與流向', desc: '分析多變數相關性、密度矩陣或資源流轉路徑' }
@@ -451,6 +451,64 @@ window.CHARTS_DATA = [
     caveats: [
       '<strong>背景區間建議使用同色系的明度深淺</strong>：避免把背景塗成刺眼的紅黃綠大色塊而搶走中心「實際表現柱」與「目標線」的視覺焦點。',
       '<strong>清楚標註目標線圖例</strong>：確保讀者知道垂直短線代表「目標值 (Target)」而非最大值。'
+    ]
+  },
+  {
+    id: 'river',
+    number: 16,
+    name: '河道圖 / 主題河流圖',
+    enName: 'River / Channel & Stream Chart',
+    category: '趨勢類',
+    goalIds: ['trend', 'dist', 'part'],
+    summary: '支援兩種常見的「河道」視覺化：1. 上下界信賴區間帶狀河道圖（均值＋歷史高低波幅通道）；2. 中心對稱流動的主題河流圖 (Streamgraph)。',
+    controls: [
+      { key: 'riverMode', label: '河道圖型態切換', type: 'select', value: 'channel', options: [
+        { value: 'channel', label: '區間通道河道圖 (均值線 + 上下界波幅通道)' },
+        { value: 'stream', label: '主題河流圖 (Streamgraph 多類別有機消長)' }
+      ]},
+      { key: 'bandWidth', label: '河道寬度 / 波動擴張倍率', type: 'range', min: 50, max: 160, step: 10, value: 100, unit: '%' },
+      { key: 'showActualLine', label: '顯示當期實際觀測軌跡線', type: 'checkbox', value: true }
+    ],
+    purpose: [
+      '<strong>區間通道河道圖 (Band / Channel Chart)</strong>：同時呈現「長期均值／預測中心線」與「正常波動上下界（如 $\\pm 1\\sigma$、$\\pm 2\\sigma$、歷史五年高低區間）」，一眼判斷當下數值是處於安全河道內，還是已經「破岸（突破異常閾值）」。',
+      '<strong>主題河流圖 (ThemeRiver / Streamgraph)</strong>：以中心水平軸為基準上下對稱展開多個類別的面積，消除傳統堆疊面積圖的稜角感，適合呈現多項主題熱度或銷量隨時間的有機興衰。'
+    ],
+    scenarios: [
+      '<strong>金融、匯率與庫存監控（區間河道）</strong>：布林通道 (Bollinger Bands)、歷年同月原油庫存／氣溫五年均值與極值河道、營收預測信賴區間 (Confidence Interval)。',
+      '<strong>製程品管與醫療監測（區間河道）</strong>：病患生理指標（血壓/心率）相對於正常參考範圍河道的偏離監控。',
+      '<strong>輿情與文化趨勢（主題河流）</strong>：各類音樂流派、新聞關鍵字或產品線在過去十年間的聲量消長。'
+    ],
+    caveats: [
+      '<strong>區間河道須明確標註上下界定義</strong>：務必在圖例寫清楚河道邊界代表「最大/最小值」、「第 10~90 百分位」還是「$95\\%$ 信賴區間」，否則讀者無法評估突破河道的嚴重性。',
+      '<strong>主題河流圖不適合讀取精確數值</strong>：因為上下邊界都在彎曲流動，沒有固定水平基準線，只適合看「整體大勢興衰」，不適合精確比對某時間點的細微高度差。'
+    ]
+  },
+  {
+    id: 'gantt',
+    number: 17,
+    name: '甘特圖 (專案時程圖)',
+    enName: 'Gantt Chart',
+    category: '趨勢類',
+    goalIds: ['trend', 'compare'],
+    summary: '專案管理最核心的視覺工具，以橫向時間軸呈現各項任務的「起訖時間、工期長短、完成進度、先後依賴關係與關鍵里程碑」。',
+    controls: [
+      { key: 'todayWeek', label: '當前檢視基準日 (Today 線位置)', type: 'range', min: 2, max: 11, step: 1, value: 6, unit: '週' },
+      { key: 'delayDays', label: '核心研發階段延誤模擬', type: 'range', min: 0, max: 3, step: 1, value: 0, unit: '週' },
+      { key: 'showDeps', label: '顯示任務前置依賴箭頭 (Dependencies)', type: 'checkbox', value: true },
+      { key: 'showCritical', label: '高亮顯示要徑任務 (Critical Path)', type: 'checkbox', value: true }
+    ],
+    purpose: [
+      '<strong>全局掌控專案排程與重疊度</strong>：一眼看清哪些任務可以平行推進（Parallel）、哪些任務必須等待前置作業完成（Sequential）。',
+      '<strong>進度落後預警與要徑識別</strong>：搭配「今日基準線 (Today Marker)」與橫條內的深淺完成度，立即抓出落後進度且會拖累最終上線日的「要徑任務 (Critical Path)」。'
+    ],
+    scenarios: [
+      '<strong>軟體與產品開發 (Roadmap & Sprint)</strong>：需求訪談 → UI/UX 設計 → 前後端開發 → 整合測試 → 正式上線里程碑。',
+      '<strong>營建工程與硬體製造</strong>：採購備料、施工階段、驗收節點與跨包商協作排程。',
+      '<strong>大型活動與行銷檔期規劃</strong>：雙 11 促銷前置預熱、素材製作、廣告走期與結案復盤。'
+    ],
+    caveats: [
+      '<strong>粒度切勿過細（避免變成進度流水帳）</strong>：一張甘特圖建議控制在 8~20 個高階工作包 (Work Packages / Epics)；若塞入上百個細碎子任務，畫面會失去宏觀決策價值。',
+      '<strong>一定要畫出「今日基準線 (Today Line)」与「相依關係」</strong>：試著在上方拉動「核心研發階段延誤模擬」，觀察當要徑任務延誤時，後續依賴任務與最終里程碑如何產生連鎖骨牌效應！'
     ]
   }
 ];

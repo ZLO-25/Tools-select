@@ -5,14 +5,14 @@
 window.TOOLS_REGISTRY = [
   {
     id: 'chart-selector-15',
-    title: '15種常用數據圖表互動指南',
+    title: '17種常用數據與專案圖表互動指南',
     subtitle: 'Interactive Data Visualization & Chart Selector',
-    category: '數據分析與視覺化',
+    category: '數據分析與專案管理',
     status: 'active',
-    badge: '核心工具 · 15種可調圖表',
+    badge: '核心工具 · 17種可調圖表',
     icon: '📊',
-    description: '收錄 15 種最常用的數據圖表，提供即時參數滑桿調整、視覺比較、核心用途、常見商業/工程場景與設計避坑注意事項，並內建「我該用哪張圖？」決策精靈與隨機抽卡學習模式。',
-    tags: ['資料視覺化', '圖表選擇', '商業分析', '互動教學'],
+    description: '收錄 17 種最常用的數據與專案管理圖表（含河道圖、甘特圖、桑基圖、瀑布圖等），提供即時參數滑桿調整、視覺比較、核心用途、常見商業/工程場景與設計避坑注意事項。',
+    tags: ['資料視覺化', '圖表選擇', '專案管理', '互動教學'],
     updatedAt: '2026-11'
   },
   {
