@@ -3,25 +3,28 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tools-select | 互動工具選擇與視覺化知識圖鑑</title>
-  <meta name="description" content="互動式工具選擇與日常學習中心：首發收錄 15 種常用數據圖表可調式互動實驗室、用途、常見場景與避坑指南。" />
+  <title>Tools-select | PM 實戰工具箱 &amp; 17種常用圖表互動工作台</title>
+  <meta name="description" content="專為 PM 打造的互動工具選擇與知識圖鑑：依 PM 使用頻率排序 17 種可自訂數據與匯出的常用圖表，並收錄大人學與 TOC 限制理論 10 大實戰管理工具。" />
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
-  <!-- 頂部全域導覽列 (支援多工具切換與隨手學習) -->
+  <!-- 頂部全域導覽列 -->
   <header class="top-navbar">
     <div class="navbar-inner">
       <div class="brand" data-nav-view="hub-directory" title="前往多工具選擇大廳">
-        <div class="brand-logo">TS</div>
+        <div class="brand-logo">PM</div>
         <div class="brand-text">
-          <h1>Tools-select 工具與知識圖鑑</h1>
-          <span>Interactive Tool Selector &amp; Learning Hub</span>
+          <h1>Tools-select · PM 工具與圖表工作台</h1>
+          <span>PM Tool Selector, Editable Charts &amp; Learning Hub</span>
         </div>
       </div>
 
       <nav class="nav-actions">
         <button class="nav-pill active" data-nav-view="chart-workbench">
-          📊 常用圖表互動工作台 (17種)
+          📊 PM 常用圖表 (17種)
+        </button>
+        <button class="nav-pill" data-nav-view="pm-workbench">
+          🧠 PM 實戰工具箱 (10大框架)
         </button>
         <button class="nav-pill" data-nav-view="chart-overview">
           🗂️ 圖表總覽牆
@@ -30,7 +33,7 @@
           🎲 隨機抽卡學習
         </button>
         <button class="nav-pill" data-nav-view="hub-directory">
-          🧭 全部工具大廳 (擴充架構)
+          🧭 全部工具大廳
         </button>
         <button class="nav-pill" id="btn-theme">
           ☀️ 切換淺色
@@ -43,32 +46,32 @@
     <!-- 頂部橫幅與關鍵統計 -->
     <section class="hub-banner">
       <div class="hub-banner-info">
-        <h2>選對工具，一眼看懂數據背後的真相</h2>
+        <h2>專為 PM 打造：選對圖表與工具，直接編輯並匯出簡報使用</h2>
         <p>
-          這裡是你的個人化<strong>工具選擇器與隨手學習基地</strong>。不僅能根據當下任務快速挑選合適的圖表或工具，沒事時也能點擊「隨機抽卡學習」並拉動右側滑桿，親手體驗參數變化對視覺判讀的影響。
+          左側圖表已依 <strong>PM 實務使用頻率排序（#1 甘特圖、#2 河道圖、#3 長條圖、#4 瀑布圖...）</strong>，所有圖表與 <strong>10 大大人學 / TOC 實戰管理工具</strong> 皆支援自訂文字數據、即時調整並一鍵匯出高畫質 <strong>PNG / SVG</strong>！
         </p>
       </div>
       <div class="hub-stats">
         <div class="stat-chip">
           <strong>17</strong>
-          <span>可調式常用圖表</span>
+          <span>PM 排序圖表</span>
         </div>
         <div class="stat-chip">
-          <strong>5 大類</strong>
-          <span>分析決策情境</span>
+          <strong>10</strong>
+          <span>大人學/TOC 工具</span>
         </div>
         <div class="stat-chip">
           <strong id="stat-fav-count">0</strong>
-          <span>已收藏常用圖表</span>
+          <span>已收藏項目</span>
         </div>
       </div>
     </section>
 
-    <!-- 決策精靈與搜尋篩選區 (共用) -->
+    <!-- 決策精靈與搜尋篩選區 (圖表頁與總覽牆共用) -->
     <section id="shared-filter-section">
       <div class="wizard-panel">
         <div class="wizard-header">
-          <h3>🧭 圖表決策精靈：你現在想用數據回答什麼問題？</h3>
+          <h3>🧭 PM 圖表決策精靈：你現在想在簡報或會議中解決什麼問題？</h3>
           <span style="font-size:0.8rem;color:var(--text-secondary);">點選下方目標立即篩選最適合的圖表</span>
         </div>
         <div class="goal-buttons" id="goal-buttons"></div>
@@ -81,18 +84,16 @@
             type="text"
             id="search-input"
             class="search-input"
-            placeholder="搜尋圖表名稱（如：長條圖、盒鬚圖、桑基圖、Waterfall）或應用場景（如：財報、電商、留存率）..."
+            placeholder="搜尋圖表名稱（如：甘特圖、河道圖、瀑布圖、氣泡圖）或場景（如：要徑、預算、優先級、OKR）..."
           />
         </div>
       </div>
     </section>
 
-    <!-- 視圖 1：15種常用圖表互動工作台 (Master-Detail) -->
+    <!-- 視圖 1：PM 常用 17 種圖表互動工作台 -->
     <section id="view-workbench" class="workspace-layout">
-      <!-- 左側 15 種圖表清單 -->
       <aside class="chart-nav-list" id="chart-nav-list"></aside>
 
-      <!-- 右側主舞台：可調式圖表 + 參數控制 + 用途/場景/注意事項 -->
       <article class="chart-stage-card">
         <div class="stage-header">
           <div class="stage-title-group">
@@ -111,8 +112,11 @@
           <div class="canvas-wrapper">
             <div class="svg-mount" id="svg-mount"></div>
             <div class="canvas-caption">
-              <span>💡 提示：將滑鼠移至圖表元素上可檢視詳細數值 Tooltip</span>
-              <span>即時 SVG 向量渲染引擎</span>
+              <span>💡 滑鼠移至圖表可看細節</span>
+              <div class="export-toolbar">
+                <button class="btn-export" id="btn-chart-export-png">📥 匯出 PNG 簡報圖檔</button>
+                <button class="btn-export" id="btn-chart-export-svg">📐 匯出 SVG 向量檔</button>
+              </div>
             </div>
           </div>
 
@@ -125,14 +129,33 @@
           </div>
         </div>
 
-        <!-- 核心知識三欄：用途、常見場景、注意事項 -->
+        <!-- 自訂標題與數據編輯器 -->
+        <div class="custom-editor-box" id="chart-custom-editor">
+          <div class="custom-editor-header">
+            <h4>✏️ 自訂圖表標題與專案數據（修改後即時重繪，可直接匯出使用）</h4>
+            <button class="btn-icon" id="btn-reset-custom-data" style="padding:0.25rem 0.6rem;font-size:0.76rem;">恢復範例數據</button>
+          </div>
+          <div class="control-group">
+            <label class="control-label"><span>圖表標題</span></label>
+            <input type="text" id="chart-custom-title" class="control-input" placeholder="輸入你的簡報圖表標題..." />
+          </div>
+          <div class="control-group">
+            <label class="control-label">
+              <span>自訂數據內容</span>
+              <span id="chart-data-hint" class="editor-hint"></span>
+            </label>
+            <textarea id="chart-custom-data" class="control-textarea" spellcheck="false"></textarea>
+          </div>
+        </div>
+
+        <!-- 核心知識三欄 -->
         <div class="knowledge-grid">
           <div class="info-panel purpose">
             <h3>🎯 核心用途 (What &amp; Why)</h3>
             <ul id="list-purpose"></ul>
           </div>
           <div class="info-panel scenarios">
-            <h3>💼 常見實務場景 (When to Use)</h3>
+            <h3>💼 PM 常見實務場景 (When to Use)</h3>
             <ul id="list-scenarios"></ul>
           </div>
           <div class="info-panel caveats">
@@ -143,20 +166,71 @@
       </article>
     </section>
 
-    <!-- 視圖 2：15張圖表總覽卡片牆 -->
+    <!-- 視圖 2：PM 10大實戰思維與管理工具箱 (大人學 / TOC / PMBOK) -->
+    <section id="view-pm-workbench" class="workspace-layout hidden">
+      <aside class="chart-nav-list" id="pm-nav-list"></aside>
+
+      <article class="chart-stage-card">
+        <div class="stage-header">
+          <div class="stage-title-group">
+            <h2 id="pm-stage-title"></h2>
+            <p id="pm-stage-summary"></p>
+          </div>
+          <div class="stage-actions">
+            <button class="btn-export" id="btn-pm-export-png">📥 匯出 PNG 圖檔</button>
+            <button class="btn-export" id="btn-pm-export-svg">📐 匯出 SVG 向量檔</button>
+          </div>
+        </div>
+
+        <div class="canvas-wrapper" style="margin-bottom:1.25rem;">
+          <div class="svg-mount" id="pm-svg-mount" style="height:390px;"></div>
+          <div class="canvas-caption">
+            <span>💡 修改下方欄位文字即可即時更新視覺圖表並匯出用於會議溝通</span>
+            <span>大人學 / TOC / PMBOK 實戰框架</span>
+          </div>
+        </div>
+
+        <!-- 可編輯框架欄位 -->
+        <div class="custom-editor-box">
+          <div class="custom-editor-header">
+            <h4>✏️ 自訂工具內容（即時同步視覺圖表）</h4>
+            <button class="btn-icon" id="btn-pm-reset" style="padding:0.25rem 0.6rem;font-size:0.76rem;">恢復預設範例</button>
+          </div>
+          <div class="pm-fields-grid" id="pm-fields-grid"></div>
+        </div>
+
+        <!-- 核心知識三欄 -->
+        <div class="knowledge-grid">
+          <div class="info-panel purpose">
+            <h3>🎯 核心用途 (What &amp; Why)</h3>
+            <ul id="pm-list-purpose"></ul>
+          </div>
+          <div class="info-panel scenarios">
+            <h3>💼 常見實務場景 (When to Use)</h3>
+            <ul id="pm-list-scenarios"></ul>
+          </div>
+          <div class="info-panel caveats">
+            <h3>⚠️ 注意事項與避坑指南 (Caveats)</h3>
+            <ul id="pm-list-caveats"></ul>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- 視圖 3：圖表總覽卡片牆 -->
     <section id="view-overview" class="hidden">
       <div class="overview-grid" id="overview-grid"></div>
     </section>
 
-    <!-- 視圖 3：多工具擴充大廳 (Tools Hub Directory) -->
+    <!-- 視圖 4：多工具擴充大廳 (Tools Hub Directory) -->
     <section id="view-hub" class="hidden">
       <div class="wizard-panel">
         <div class="wizard-header">
-          <h3>🧩 模組化工具大廳 (Multi-Tool Registry Architecture)</h3>
-          <span style="font-size:0.82rem;color:var(--text-secondary);">未來新增工具僅需在 <code>js/registry.js</code> 註冊即可自動掛載</span>
+          <h3>🧩 PM 工具選擇大廳 (Multi-Tool Registry Architecture)</h3>
+          <span style="font-size:0.82rem;color:var(--text-secondary);">未來新增任何工具僅需在 <code>js/registry.js</code> 註冊即可自動掛載</span>
         </div>
         <p style="font-size:0.9rem;color:var(--text-secondary);margin-bottom:0.5rem;">
-          本網站採用可擴充的模組化註冊中心設計，旨在收集各類「決策選擇器」與「互動視覺化學習工具」。點選已啟用的工具卡片即可進入使用：
+          點選下方任一工具卡片，即可直接開啟對應的互動工作台或單點實戰工具：
         </p>
         <div class="tool-directory-grid" id="tool-directory-grid"></div>
       </div>
@@ -168,6 +242,8 @@
   <script src="js/registry.js"></script>
   <script src="data/charts-data.js"></script>
   <script src="js/chart-renderer.js"></script>
+  <script src="data/pm-tools-data.js"></script>
+  <script src="js/pm-tools-renderer.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>
