@@ -19,7 +19,7 @@
   function createSVG(w = 720, h = 370, title = '') {
     let s = `<svg viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg" role="img" style="background:#0f172a;border-radius:12px;font-family:'Inter','Microsoft JhengHei',sans-serif;">`;
     if (title) {
-      s += `<text x="${w / 2}" y="26" text-anchor="middle" fill="#f8fafc" font-size="15.5" font-weight="800">${esc(title)}</text>`;
+      s += `<text x="${w / 2}" y="27" text-anchor="middle" fill="#f8fafc" font-size="17" font-weight="800">${esc(title)}</text>`;
     }
     return s;
   }
@@ -33,7 +33,7 @@
 
   // 1. Gantt Chart
   function renderGantt(p) {
-    const w = 720, h = 370, padL = 150, padR = 35, padT = 54, padB = 40;
+    const w = 720, h = 370, padL = 165, padR = 40, padT = 54, padB = 42;
     const plotW = w - padL - padR, plotH = h - padT - padB;
     const delay = Number(p.delayDays) || 0;
     const todayW = Number(p.todayWeek) || 6;
@@ -80,7 +80,7 @@
       const x = xAt(wk);
       svg += `<line x1="${x}" y1="${padT - 8}" x2="${x}" y2="${padT + plotH}" stroke="#94a3b8" stroke-opacity="0.16" stroke-dasharray="3 3"/>`;
       if (wk < totalWeeks) {
-        svg += `<text x="${x + (plotW / totalWeeks) / 2}" y="${padT - 10}" text-anchor="middle" fill="#cbd5e1" font-size="11">W${wk + 1}</text>`;
+        svg += `<text x="${x + (plotW / totalWeeks) / 2}" y="${padT - 10}" text-anchor="middle" fill="#cbd5e1" font-size="12.5">W${wk + 1}</text>`;
       }
     }
 
@@ -92,14 +92,14 @@
       const isCrit = p.showCritical && t.crit;
       const baseColor = isCrit ? '#fb7185' : '#38bdf8';
 
-      svg += `<text x="${padL - 10}" y="${y + rowH / 2 + 4}" text-anchor="end" fill="#f8fafc" font-size="12" font-weight="${isCrit ? '700' : '500'}">${esc(t.name)}</text>`;
+      svg += `<text x="${padL - 10}" y="${y + rowH / 2 + 4}" text-anchor="end" fill="#f8fafc" font-size="13.5" font-weight="${isCrit ? '700' : '500'}">${esc(t.name)}</text>`;
       svg += `<rect x="${x1}" y="${barY}" width="${bw}" height="22" rx="6" fill="${baseColor}" fill-opacity="0.28" stroke="${baseColor}" stroke-width="1.8" data-tip="${esc(t.name)} | W${t.start + 1}~W${t.start + t.dur} | 完成:${t.prog}%"/>`;
 
       if (t.prog > 0) {
         const pw = (t.prog / 100) * bw;
         svg += `<rect x="${x1}" y="${barY}" width="${pw}" height="22" rx="6" fill="${baseColor}" fill-opacity="0.88"/>`;
       }
-      svg += `<text x="${x1 + bw + 6}" y="${barY + 15}" fill="#e2e8f0" font-size="11">${t.prog}%</text>`;
+      svg += `<text x="${x1 + bw + 6}" y="${barY + 15}" fill="#e2e8f0" font-size="12.5">${t.prog}%</text>`;
 
       if (p.showDeps && t.dep > 0) {
         const prevIdx = tasks.findIndex(x => x.id === t.dep);
@@ -116,8 +116,8 @@
 
     const tx = xAt(todayW);
     svg += `<line x1="${tx}" y1="${padT - 10}" x2="${tx}" y2="${padT + plotH + 6}" stroke="#34d399" stroke-width="2.5"/>`;
-    svg += `<rect x="${tx - 34}" y="${padT + plotH + 6}" width="68" height="18" rx="4" fill="#34d399"/>`;
-    svg += `<text x="${tx}" y="${padT + plotH + 18}" text-anchor="middle" fill="#0b0f19" font-size="10.5" font-weight="800">今日 W${todayW}</text>`;
+    svg += `<rect x="${tx - 38}" y="${padT + plotH + 6}" width="76" height="20" rx="4" fill="#34d399"/>`;
+    svg += `<text x="${tx}" y="${padT + plotH + 20}" text-anchor="middle" fill="#0b0f19" font-size="12" font-weight="800">今日 W${todayW}</text>`;
 
     return svg + '</svg>';
   }
@@ -163,7 +163,7 @@
         const v = Math.round((maxV * i) / 4);
         const y = toY(v);
         svg += `<line x1="${padL}" y1="${y}" x2="${w - padR}" y2="${y}" stroke="#94a3b8" stroke-opacity="0.14" stroke-dasharray="4 4"/>`;
-        svg += `<text x="${padL - 8}" y="${y + 4}" text-anchor="end" fill="#cbd5e1" font-size="11">${v}</text>`;
+        svg += `<text x="${padL - 8}" y="${y + 4}" text-anchor="end" fill="#cbd5e1" font-size="12.5">${v}</text>`;
       }
 
       const upper2 = rows.map((r, i) => `${xAt(i)},${toY(r.mean + r.half * 1.45)}`).join(' L ');
@@ -193,9 +193,9 @@
       }
 
       rows.forEach((r, i) => {
-        svg += `<text x="${xAt(i)}" y="${padT + plotH + 22}" text-anchor="middle" fill="#cbd5e1" font-size="11">${esc(r.label)}</text>`;
+        svg += `<text x="${xAt(i)}" y="${padT + plotH + 22}" text-anchor="middle" fill="#cbd5e1" font-size="12.5">${esc(r.label)}</text>`;
       });
-      svg += `<text x="${padL}" y="${padT - 8}" fill="#38bdf8" font-size="11.5">🌊 淺藍走廊 = 安全河道區間　|　虛線 = 預期中心線　|　<tspan fill="#fbbf24" font-weight="700">黃線 = 實際值 (紅點為破岸預警)</tspan></text>`;
+      svg += `<text x="${padL}" y="${padT - 8}" fill="#38bdf8" font-size="12.5">🌊 淺藍走廊 = 安全河道區間　|　虛線 = 預期中心線　|　<tspan fill="#fbbf24" font-weight="700">黃線 = 實際值 (紅點為破岸預警)</tspan></text>`;
     } else {
       const cy = padT + plotH / 2;
       const scale = 0.95 * bwMul;
@@ -220,7 +220,7 @@
       });
 
       rows.forEach((r, i) => {
-        svg += `<text x="${xAt(i)}" y="${padT + plotH + 22}" text-anchor="middle" fill="#cbd5e1" font-size="11">${esc(r.label)}</text>`;
+        svg += `<text x="${xAt(i)}" y="${padT + plotH + 22}" text-anchor="middle" fill="#cbd5e1" font-size="12.5">${esc(r.label)}</text>`;
       });
     }
     return svg + '</svg>';
@@ -260,7 +260,7 @@
         const v = Math.round(baseOffset + ((maxVal - baseOffset) * i) / 4);
         const y = padT + plotH - (i / 4) * plotH;
         svg += `<line x1="${padL}" y1="${y}" x2="${w - padR}" y2="${y}" stroke="#94a3b8" stroke-opacity="0.14" stroke-dasharray="4 4"/>`;
-        svg += `<text x="${padL - 10}" y="${y + 4}" text-anchor="end" fill="#cbd5e1" font-size="11">${v}</text>`;
+        svg += `<text x="${padL - 10}" y="${y + 4}" text-anchor="end" fill="#cbd5e1" font-size="12.5">${v}</text>`;
       }
 
       const step = plotW / data.length;
@@ -273,12 +273,12 @@
         const color = PALETTE[idx % PALETTE.length];
         svg += `<rect x="${x}" y="${y}" width="${barW}" height="${bh}" rx="6" fill="${color}" data-tip="${esc(d.label)}: ${d.val}"/>`;
         if (p.showValues) {
-          svg += `<text x="${x + barW / 2}" y="${y - 7}" text-anchor="middle" fill="#f8fafc" font-size="12" font-weight="700">${d.val}</text>`;
+          svg += `<text x="${x + barW / 2}" y="${y - 7}" text-anchor="middle" fill="#f8fafc" font-size="13.5" font-weight="700">${d.val}</text>`;
         }
-        svg += `<text x="${x + barW / 2}" y="${padT + plotH + 22}" text-anchor="middle" fill="#cbd5e1" font-size="11.5">${esc(d.label)}</text>`;
+        svg += `<text x="${x + barW / 2}" y="${padT + plotH + 22}" text-anchor="middle" fill="#cbd5e1" font-size="13">${esc(d.label)}</text>`;
       });
     } else {
-      const padL = 115, padR = 55, padT = 48, padB = 32;
+      const padL = 128, padR = 55, padT = 48, padB = 32;
       const plotW = w - padL - padR, plotH = h - padT - padB;
       const step = plotH / data.length;
       const barH = Math.min(36, step * 0.62);
@@ -288,10 +288,10 @@
         const bw = ratio * plotW;
         const y = padT + idx * step + (step - barH) / 2;
         const color = PALETTE[idx % PALETTE.length];
-        svg += `<text x="${padL - 10}" y="${y + barH / 2 + 4}" text-anchor="end" fill="#f8fafc" font-size="12">${esc(d.label)}</text>`;
+        svg += `<text x="${padL - 10}" y="${y + barH / 2 + 5}" text-anchor="end" fill="#f8fafc" font-size="13.5">${esc(d.label)}</text>`;
         svg += `<rect x="${padL}" y="${y}" width="${bw}" height="${barH}" rx="6" fill="${color}" data-tip="${esc(d.label)}: ${d.val}"/>`;
         if (p.showValues) {
-          svg += `<text x="${padL + bw + 8}" y="${y + barH / 2 + 4}" fill="#f8fafc" font-size="12" font-weight="700">${d.val}</text>`;
+          svg += `<text x="${padL + bw + 8}" y="${y + barH / 2 + 5}" fill="#f8fafc" font-size="13.5" font-weight="700">${d.val}</text>`;
         }
       });
     }
@@ -350,7 +350,7 @@
       const v = Math.round((maxV * i) / 4);
       const y = toY(v);
       svg += `<line x1="${padL}" y1="${y}" x2="${w - padR}" y2="${y}" stroke="#94a3b8" stroke-opacity="0.14" stroke-dasharray="4 4"/>`;
-      svg += `<text x="${padL - 8}" y="${y + 4}" text-anchor="end" fill="#cbd5e1" font-size="11">${v}</text>`;
+      svg += `<text x="${padL - 8}" y="${y + 4}" text-anchor="end" fill="#cbd5e1" font-size="12.5">${v}</text>`;
     }
 
     const step = plotW / bars.length;
@@ -364,8 +364,8 @@
       const color = b.type === 'total' ? '#38bdf8' : (b.type === 'plus' ? '#34d399' : '#fb7185');
 
       svg += `<rect x="${x}" y="${yTop}" width="${bw}" height="${bh}" rx="5" fill="${color}" data-tip="${esc(b.label)}: ${b.display > 0 && b.type !== 'total' ? '+' : ''}${b.display}"/>`;
-      svg += `<text x="${x + bw / 2}" y="${yTop - 7}" text-anchor="middle" fill="#f8fafc" font-size="12" font-weight="700">${b.display > 0 && b.type !== 'total' ? '+' : ''}${b.display}</text>`;
-      svg += `<text x="${x + bw / 2}" y="${padT + plotH + 22}" text-anchor="middle" fill="#cbd5e1" font-size="11.5">${esc(b.label)}</text>`;
+      svg += `<text x="${x + bw / 2}" y="${yTop - 7}" text-anchor="middle" fill="#f8fafc" font-size="13.5" font-weight="700">${b.display > 0 && b.type !== 'total' ? '+' : ''}${b.display}</text>`;
+      svg += `<text x="${x + bw / 2}" y="${padT + plotH + 22}" text-anchor="middle" fill="#cbd5e1" font-size="13">${esc(b.label)}</text>`;
 
       if (p.showConnectors && i < bars.length - 1) {
         const nextX = padL + (i + 1) * step + (step - bw) / 2;
@@ -413,7 +413,7 @@
       const v = Math.round(minV + ((maxV - minV) * i) / 4);
       const y = padT + plotH - (i / 4) * plotH;
       svg += `<line x1="${padL}" y1="${y}" x2="${w - padR}" y2="${y}" stroke="#94a3b8" stroke-opacity="0.14" stroke-dasharray="4 4"/>`;
-      svg += `<text x="${padL - 8}" y="${y + 4}" text-anchor="end" fill="#cbd5e1" font-size="11">${v}</text>`;
+      svg += `<text x="${padL - 8}" y="${y + 4}" text-anchor="end" fill="#cbd5e1" font-size="12.5">${v}</text>`;
     }
 
     const toCoord = (arr) => arr.map((d, i) => ({
@@ -444,7 +444,7 @@
 
     coords.forEach((c) => {
       svg += `<circle cx="${c.x}" cy="${c.y}" r="5" fill="#38bdf8" stroke="#0b0f19" stroke-width="2" data-tip="${esc(c.m)}: ${c.val}"/>`;
-      svg += `<text x="${c.x}" y="${padT + plotH + 22}" text-anchor="middle" fill="#cbd5e1" font-size="11.5">${esc(c.m)}</text>`;
+      svg += `<text x="${c.x}" y="${padT + plotH + 22}" text-anchor="middle" fill="#cbd5e1" font-size="13">${esc(c.m)}</text>`;
     });
 
     return svg + '</svg>';
@@ -489,11 +489,11 @@
 
       const pts = `${cx - wTop / 2},${y1} ${cx + wTop / 2},${y1} ${cx + wBot / 2},${y2} ${cx - wBot / 2},${y2}`;
       svg += `<polygon points="${pts}" fill="${st.color}" fill-opacity="0.86" data-tip="${esc(st.name)}: ${st.rate}%"/>`;
-      svg += `<text x="${cx}" y="${y1 + stepH / 2 + 5}" text-anchor="middle" fill="#0b0f19" font-size="13" font-weight="800">${esc(st.name)} · ${st.rate}%</text>`;
+      svg += `<text x="${cx}" y="${y1 + stepH / 2 + 5}" text-anchor="middle" fill="#0b0f19" font-size="14" font-weight="800">${esc(st.name)} · ${st.rate}%</text>`;
 
       if (p.showDropoff && i > 0) {
         const conv = Math.round((st.rate / stages[i - 1].rate) * 100);
-        svg += `<text x="${cx + maxW / 2 + 20}" y="${y1 + 12}" fill="#cbd5e1" font-size="12">↳ 環比轉化: <tspan fill="#fbbf24" font-weight="700">${conv}%</tspan></text>`;
+        svg += `<text x="${cx + maxW / 2 + 20}" y="${y1 + 12}" fill="#cbd5e1" font-size="13">↳ 環比轉化: <tspan fill="#fbbf24" font-weight="700">${conv}%</tspan></text>`;
       }
     });
 
@@ -525,19 +525,19 @@
     if (p.showQuadrants) {
       svg += `<line x1="${toX(50)}" y1="${padT}" x2="${toX(50)}" y2="${padT + plotH}" stroke="#94a3b8" stroke-opacity="0.3" stroke-dasharray="5 5"/>`;
       svg += `<line x1="${padL}" y1="${toY(50)}" x2="${w - padR}" y2="${toY(50)}" stroke="#94a3b8" stroke-opacity="0.3" stroke-dasharray="5 5"/>`;
-      svg += `<text x="${w - padR - 8}" y="${padT + 18}" text-anchor="end" fill="#38bdf8" font-size="11.5" font-weight="700">★ 第一象限：高價值 × 高可行性 (優先排入)</text>`;
-      svg += `<text x="${padL + 8}" y="${padT + 18}" fill="#818cf8" font-size="11.5" font-weight="700">🚀 第二象限：高價值長期戰略</text>`;
+      svg += `<text x="${w - padR - 8}" y="${padT + 18}" text-anchor="end" fill="#38bdf8" font-size="12.5" font-weight="700">★ 第一象限：高價值 × 高可行性 (優先排入)</text>`;
+      svg += `<text x="${padL + 8}" y="${padT + 18}" fill="#818cf8" font-size="12.5" font-weight="700">🚀 第二象限：高價值長期戰略</text>`;
     }
 
     items.forEach((d) => {
       const r = Math.sqrt(d.rev) * 2.3 * scale;
       svg += `<circle cx="${toX(d.x)}" cy="${toY(d.y)}" r="${r.toFixed(1)}" fill="${d.color}" fill-opacity="0.62" stroke="${d.color}" stroke-width="2" data-tip="${esc(d.name)} | 可行性:${d.x} 商業價值:${d.y} 規模:${d.rev}"/>`;
       if (p.showLabels) {
-        svg += `<text x="${toX(d.x)}" y="${toY(d.y) + 4}" text-anchor="middle" fill="#f8fafc" font-size="11.5" font-weight="700">${esc(d.name)}</text>`;
+        svg += `<text x="${toX(d.x)}" y="${toY(d.y) + 4}" text-anchor="middle" fill="#f8fafc" font-size="13" font-weight="700">${esc(d.name)}</text>`;
       }
     });
 
-    svg += `<text x="${padL + plotW / 2}" y="${h - 10}" text-anchor="middle" fill="#cbd5e1" font-size="12">實作可行性 (X) × 商業價值影響力 (Y) × 氣泡面積=規模</text>`;
+    svg += `<text x="${padL + plotW / 2}" y="${h - 10}" text-anchor="middle" fill="#cbd5e1" font-size="13">實作可行性 (X) × 商業價值影響力 (Y) × 氣泡面積=規模</text>`;
     return svg + '</svg>';
   }
 
@@ -563,7 +563,7 @@
     kpis.forEach((k, idx) => {
       const y = 52 + idx * stepY;
       const barH = 36;
-      svg += `<text x="${padL - 12}" y="${y + barH / 2 + 5}" text-anchor="end" fill="#f8fafc" font-size="12.5" font-weight="600">${esc(k.name)}</text>`;
+      svg += `<text x="${padL - 12}" y="${y + barH / 2 + 5}" text-anchor="end" fill="#f8fafc" font-size="13.5" font-weight="600">${esc(k.name)}</text>`;
 
       if (p.showZones) {
         svg += `<rect x="${padL}" y="${y}" width="${plotW * 0.6}" height="${barH}" rx="4" fill="#94a3b8" fill-opacity="0.12"/>`;
@@ -577,10 +577,10 @@
 
       svg += `<rect x="${padL}" y="${y + 10}" width="${actW}" height="${barH - 20}" rx="3" fill="${color}" data-tip="${esc(k.name)} | 實際: ${k.actual}% / 目標: ${k.target}%"/>`;
       svg += `<line x1="${tgtX}" y1="${y + 4}" x2="${tgtX}" y2="${y + barH - 4}" stroke="#fbbf24" stroke-width="3.5" data-tip="目標線: ${k.target}%"/>`;
-      svg += `<text x="${padL + plotW + 8}" y="${y + barH / 2 + 5}" fill="#f8fafc" font-size="12" font-weight="700">${k.actual}%</text>`;
+      svg += `<text x="${padL + plotW + 8}" y="${y + barH / 2 + 5}" fill="#f8fafc" font-size="13.5" font-weight="700">${k.actual}%</text>`;
     });
 
-    svg += `<text x="${padL}" y="${h - 12}" fill="#cbd5e1" font-size="11.5">■ 中心條 = 實際達成　|　<tspan fill="#fbbf24" font-weight="700">┃ 亮黃垂直線 = 目標值 (Target)</tspan></text>`;
+    svg += `<text x="${padL}" y="${h - 12}" fill="#cbd5e1" font-size="12.5">■ 中心條 = 實際達成　|　<tspan fill="#fbbf24" font-weight="700">┃ 亮黃垂直線 = 目標值 (Target)</tspan></text>`;
     return svg + '</svg>';
   }
 
@@ -611,7 +611,7 @@
       const x2 = cx + R * Math.cos(ang), y2 = cy + R * Math.sin(ang);
       const lx = cx + (R + 28) * Math.cos(ang), ly = cy + (R + 22) * Math.sin(ang);
       svg += `<line x1="${cx}" y1="${cy}" x2="${x2}" y2="${y2}" stroke="#94a3b8" stroke-opacity="0.22"/>`;
-      svg += `<text x="${lx}" y="${ly + 4}" text-anchor="middle" fill="#f8fafc" font-size="12" font-weight="600">${esc(ax.label)}</text>`;
+      svg += `<text x="${lx}" y="${ly + 4}" text-anchor="middle" fill="#f8fafc" font-size="13.5" font-weight="600">${esc(ax.label)}</text>`;
     });
 
     const buildPoly = (key, color, name) => {
@@ -631,8 +631,8 @@
     if (p.compareSecond) buildPoly('b', '#fbbf24', '方案 B');
 
     svg += `<g transform="translate(515, 70)">
-      <rect x="0" y="0" width="14" height="14" rx="3" fill="#38bdf8"/><text x="22" y="12" fill="#f8fafc" font-size="12.5">方案 A</text>
-      ${p.compareSecond ? `<rect x="0" y="28" width="14" height="14" rx="3" fill="#fbbf24"/><text x="22" y="40" fill="#f8fafc" font-size="12.5">方案 B</text>` : ''}
+      <rect x="0" y="0" width="14" height="14" rx="3" fill="#38bdf8"/><text x="22" y="12" fill="#f8fafc" font-size="13.5">方案 A</text>
+      ${p.compareSecond ? `<rect x="0" y="28" width="14" height="14" rx="3" fill="#fbbf24"/><text x="22" y="40" fill="#f8fafc" font-size="13.5">方案 B</text>` : ''}
     </g>`;
 
     return svg + '</svg>';
@@ -640,7 +640,7 @@
 
   // 10. Heatmap
   function renderHeatmap(p) {
-    const w = 720, h = 370, padL = 95, padR = 25, padT = 62, padB = 30;
+    const w = 720, h = 370, padL = 105, padR = 25, padT = 62, padB = 30;
     const plotW = w - padL - padR, plotH = h - padT - padB;
     const cols = ['W1', 'W2', 'W3', 'W4', 'W5', 'W6'];
     const lines = parseLines(p.customData);
@@ -669,18 +669,18 @@
 
     rows.forEach((row, r) => {
       const y = padT + r * ch;
-      svg += `<text x="${padL - 10}" y="${y + ch / 2 + 4}" text-anchor="end" fill="#f8fafc" font-size="12">${esc(row.name)}</text>`;
+      svg += `<text x="${padL - 10}" y="${y + ch / 2 + 5}" text-anchor="end" fill="#f8fafc" font-size="13.5">${esc(row.name)}</text>`;
       row.vals.forEach((val, c) => {
         const x = padL + c * cw;
         svg += `<rect x="${x + 2}" y="${y + 2}" width="${cw - 4}" height="${ch - 4}" rx="6" fill="${getColor(val)}" data-tip="${esc(row.name)} ${cols[c]}: ${val}%"/>`;
         if (p.showNumbers) {
-          svg += `<text x="${x + cw / 2}" y="${y + ch / 2 + 5}" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">${val}%</text>`;
+          svg += `<text x="${x + cw / 2}" y="${y + ch / 2 + 5}" text-anchor="middle" fill="#fff" font-size="13.5" font-weight="700">${val}%</text>`;
         }
       });
     });
 
     cols.forEach((col, c) => {
-      svg += `<text x="${padL + c * cw + cw / 2}" y="${padT - 10}" text-anchor="middle" fill="#cbd5e1" font-size="12">${col}</text>`;
+      svg += `<text x="${padL + c * cw + cw / 2}" y="${padT - 10}" text-anchor="middle" fill="#cbd5e1" font-size="13">${col}</text>`;
     });
 
     return svg + '</svg>';
@@ -735,7 +735,7 @@
     });
 
     if (r > 35) {
-      svg += `<text x="${cx}" y="${cy - 4}" text-anchor="middle" fill="#cbd5e1" font-size="12">總計</text>`;
+      svg += `<text x="${cx}" y="${cy - 4}" text-anchor="middle" fill="#cbd5e1" font-size="13">總計</text>`;
       svg += `<text x="${cx}" y="${cy + 18}" text-anchor="middle" fill="#f8fafc" font-size="18" font-weight="800">100%</text>`;
     }
 
@@ -744,8 +744,8 @@
       const color = PALETTE[idx % PALETTE.length];
       const pct = ((item.val / total) * 100).toFixed(1);
       svg += `<rect x="420" y="${ly - 11}" width="14" height="14" rx="4" fill="${color}"/>`;
-      svg += `<text x="444" y="${ly}" fill="#f8fafc" font-size="13">${esc(item.name)}</text>`;
-      svg += `<text x="665" y="${ly}" text-anchor="end" fill="#38bdf8" font-weight="700" font-size="13">${pct}%</text>`;
+      svg += `<text x="444" y="${ly}" fill="#f8fafc" font-size="14">${esc(item.name)}</text>`;
+      svg += `<text x="665" y="${ly}" text-anchor="end" fill="#38bdf8" font-weight="700" font-size="14">${pct}%</text>`;
     });
 
     return svg + '</svg>';
@@ -773,9 +773,9 @@
       const rx = b.x + pad / 2, ry = b.y + pad / 2;
       const rw = b.bw - pad, rh = b.bh - pad;
       svg += `<rect x="${rx}" y="${ry}" width="${rw}" height="${rh}" rx="8" fill="${fill}" fill-opacity="0.86" data-tip="${esc(name)}: ${pct}% (${esc(status)})"/>`;
-      svg += `<text x="${rx + 12}" y="${ry + 26}" fill="#ffffff" font-size="13" font-weight="700">${esc(name)}</text>`;
+      svg += `<text x="${rx + 12}" y="${ry + 26}" fill="#ffffff" font-size="14" font-weight="700">${esc(name)}</text>`;
       if (p.showPct) {
-        svg += `<text x="${rx + 12}" y="${ry + 48}" fill="rgba(255,255,255,0.9)" font-size="12" font-weight="600">${pct}% (${esc(status)})</text>`;
+        svg += `<text x="${rx + 12}" y="${ry + 48}" fill="rgba(255,255,255,0.9)" font-size="13" font-weight="600">${pct}% (${esc(status)})</text>`;
       }
     });
     return svg + '</svg>';
@@ -802,7 +802,7 @@
     const drawNode = (x, y, nh, color, label, val, alignLeft = true) => {
       svg += `<rect x="${x}" y="${y}" width="${nodeW}" height="${nh}" rx="5" fill="${color}"/>`;
       const tx = alignLeft ? x + nodeW + 8 : x - 8;
-      svg += `<text x="${tx}" y="${y + nh / 2 + 4}" text-anchor="${alignLeft ? 'start' : 'end'}" fill="#f8fafc" font-size="12" font-weight="600">${label}${p.showFlowValues ? ` (${val}M)` : ''}</text>`;
+      svg += `<text x="${tx}" y="${y + nh / 2 + 5}" text-anchor="${alignLeft ? 'start' : 'end'}" fill="#f8fafc" font-size="13.5" font-weight="600">${label}${p.showFlowValues ? ` (${val}M)` : ''}</text>`;
     };
 
     drawRibbon(xL + nodeW, 72 + hCloud / 2, xM, midY + hCloud / 2, hCloud, '#38bdf8', `AI雲端 → 總資源池: ${vCloud}M`);
@@ -840,7 +840,7 @@
       const v = Math.round((maxVal * i) / 4);
       const y = padT + plotH - (i / 4) * plotH;
       svg += `<line x1="${padL}" y1="${y}" x2="${w - padR}" y2="${y}" stroke="#94a3b8" stroke-opacity="0.14" stroke-dasharray="4 4"/>`;
-      svg += `<text x="${padL - 8}" y="${y + 4}" text-anchor="end" fill="#cbd5e1" font-size="11">${v}${mode === 'percent' ? '%' : ''}</text>`;
+      svg += `<text x="${padL - 8}" y="${y + 4}" text-anchor="end" fill="#cbd5e1" font-size="12.5">${v}${mode === 'percent' ? '%' : ''}</text>`;
     }
 
     const xAt = (i) => padL + (i / (rows.length - 1)) * plotW;
@@ -872,12 +872,12 @@
     }
 
     rows.forEach((r, i) => {
-      svg += `<text x="${xAt(i)}" y="${padT + plotH + 22}" text-anchor="middle" fill="#cbd5e1" font-size="12">${esc(r.q)}</text>`;
+      svg += `<text x="${xAt(i)}" y="${padT + plotH + 22}" text-anchor="middle" fill="#cbd5e1" font-size="13">${esc(r.q)}</text>`;
     });
 
     seriesMeta.forEach((s, i) => {
-      svg += `<rect x="${padL + i * 145}" y="34" width="12" height="12" rx="3" fill="${s.color}"/>`;
-      svg += `<text x="${padL + i * 145 + 18}" y="44" fill="#f8fafc" font-size="11.5">${s.name}</text>`;
+      svg += `<rect x="${padL + i * 155}" y="34" width="12" height="12" rx="3" fill="${s.color}"/>`;
+      svg += `<text x="${padL + i * 155 + 18}" y="44" fill="#f8fafc" font-size="12.5">${s.name}</text>`;
     });
 
     return svg + '</svg>';
@@ -914,7 +914,7 @@
     for (let i = 0; i <= 4; i++) {
       const v = i * 25, y = toY(v);
       svg += `<line x1="${padL}" y1="${y}" x2="${w - padR}" y2="${y}" stroke="#94a3b8" stroke-opacity="0.14" stroke-dasharray="4 4"/>`;
-      svg += `<text x="${padL - 8}" y="${y + 4}" text-anchor="end" fill="#cbd5e1" font-size="11">${v}</text>`;
+      svg += `<text x="${padL - 8}" y="${y + 4}" text-anchor="end" fill="#cbd5e1" font-size="12.5">${v}</text>`;
     }
 
     if (p.showTrend) {
@@ -952,7 +952,7 @@
     for (let i = 0; i <= 4; i++) {
       const v = i * 25, y = toY(v);
       svg += `<line x1="${padL}" y1="${y}" x2="${w - padR}" y2="${y}" stroke="#94a3b8" stroke-opacity="0.14" stroke-dasharray="4 4"/>`;
-      svg += `<text x="${padL - 8}" y="${y + 4}" text-anchor="end" fill="#cbd5e1" font-size="11">${v}h</text>`;
+      svg += `<text x="${padL - 8}" y="${y + 4}" text-anchor="end" fill="#cbd5e1" font-size="12.5">${v}h</text>`;
     }
 
     const step = plotW / groups.length;
@@ -981,7 +981,7 @@
           svg += `<circle cx="${cx}" cy="${toY(ov)}" r="5.5" fill="#fb7185" stroke="#0b0f19" stroke-width="1.5" data-tip="離群值: ${ov}h"/>`;
         });
       }
-      svg += `<text x="${cx}" y="${padT + plotH + 22}" text-anchor="middle" fill="#f8fafc" font-size="12">${esc(g.name)}</text>`;
+      svg += `<text x="${cx}" y="${padT + plotH + 22}" text-anchor="middle" fill="#f8fafc" font-size="13.5">${esc(g.name)}</text>`;
     });
 
     return svg + '</svg>';
@@ -1022,9 +1022,9 @@
     if (p.showMeanMedian) {
       const mx = padL + (mean / 100) * plotW, mdx = padL + (median / 100) * plotW;
       svg += `<line x1="${mx}" y1="${padT}" x2="${mx}" y2="${padT + plotH}" stroke="#fb7185" stroke-width="2.5" stroke-dasharray="5 3"/>`;
-      svg += `<text x="${mx + 6}" y="${padT + 16}" fill="#fb7185" font-size="11.5" font-weight="700">平均數 ${mean.toFixed(1)}</text>`;
+      svg += `<text x="${mx + 6}" y="${padT + 16}" fill="#fb7185" font-size="13" font-weight="700">平均數 ${mean.toFixed(1)}</text>`;
       svg += `<line x1="${mdx}" y1="${padT}" x2="${mdx}" y2="${padT + plotH}" stroke="#fbbf24" stroke-width="2.5"/>`;
-      svg += `<text x="${mdx - 6}" y="${padT + 32}" text-anchor="end" fill="#fbbf24" font-size="11.5" font-weight="700">中位數 ${median.toFixed(1)}</text>`;
+      svg += `<text x="${mdx - 6}" y="${padT + 34}" text-anchor="end" fill="#fbbf24" font-size="13" font-weight="700">中位數 ${median.toFixed(1)}</text>`;
     }
 
     return svg + '</svg>';

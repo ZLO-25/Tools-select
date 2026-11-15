@@ -355,13 +355,13 @@
     const filtered = getFilteredCharts();
     wall.innerHTML = filtered.map(c => `
       <div class="mini-chart-card" data-id="${c.id}">
-        <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:0.5rem;flex-wrap:wrap;">
           <span class="tool-badge">#${c.number} ${c.category}</span>
-          <span style="font-size:0.78rem;color:var(--text-secondary);">${c.enName}</span>
+          <span style="font-size:0.88rem;color:var(--text-secondary);">${c.enName}</span>
         </div>
-        <h3 style="font-size:1.1rem;margin-top:0.2rem;">${c.name}</h3>
-        <p style="font-size:0.84rem;color:var(--text-secondary);flex:1;">${c.summary}</p>
-        <div style="font-size:0.78rem;color:var(--accent-primary);font-weight:600;margin-top:0.4rem;">
+        <h3 style="font-size:1.18rem;margin-top:0.25rem;">${c.name}</h3>
+        <p style="font-size:0.95rem;color:var(--text-secondary);flex:1;line-height:1.6;">${c.summary}</p>
+        <div style="font-size:0.9rem;color:var(--accent-primary);font-weight:600;margin-top:0.4rem;">
           👉 點擊進入互動調整與匯出
         </div>
       </div>
@@ -385,11 +385,11 @@
             <span style="font-size:1.75rem;">${t.icon}</span>
             <span class="tool-badge ${t.status === 'planned' ? 'planned' : ''}">${t.badge}</span>
           </div>
-          <h3 style="font-size:1.15rem;margin-bottom:0.2rem;">${t.title}</h3>
-          <div style="font-size:0.76rem;color:var(--text-muted);margin-bottom:0.65rem;">${t.subtitle}</div>
-          <p style="font-size:0.86rem;color:var(--text-secondary);">${t.description}</p>
+          <h3 style="font-size:1.22rem;margin-bottom:0.25rem;">${t.title}</h3>
+          <div style="font-size:0.88rem;color:var(--text-muted);margin-bottom:0.65rem;">${t.subtitle}</div>
+          <p style="font-size:0.95rem;color:var(--text-secondary);line-height:1.6;">${t.description}</p>
         </div>
-        <div style="display:flex;justify-content:space-between;align-items:center;padding-top:0.8rem;border-top:1px solid var(--border-color);font-size:0.78rem;">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding-top:0.85rem;border-top:1px solid var(--border-color);font-size:0.9rem;">
           <span style="color:var(--text-secondary);">分類：${t.category}</span>
           <strong style="color:${t.status === 'active' ? 'var(--accent-primary)' : 'var(--text-muted)'};">
             ${t.status === 'active' ? '立即開啟 →' : '預留擴充插槽'}
